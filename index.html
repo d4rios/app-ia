@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 /* =====================================================================
-   MI ASISTENTE IA · versión 2.0
+   MI ASISTENTE IA · versión 3.0
    1) DISEÑO (style)  2) PANTALLAS (body)  3) FUNCIONAMIENTO (script)
    ===================================================================== */
 :root {
@@ -204,6 +204,20 @@ input[type=range] { width: 100%; accent-color: var(--acento); }
 .lector .marco { position: absolute; width: 240px; height: 240px; border: 3px solid #fff; border-radius: 22px; box-shadow: 0 0 0 9999px rgba(0,0,0,.4); pointer-events: none; }
 .lector p { margin: 16px; text-align: center; }
 .oculto { display: none !important; }
+/* Versión 3.0: ficha del asistente, plantillas y Telegram */
+.sec-t { font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--acento); margin: 16px 0 4px; display: flex; align-items: center; gap: 6px; }
+.selector { display: flex; flex-wrap: wrap; gap: 6px; }
+.selector button { border: 2px solid var(--linea); background: var(--fondo); border-radius: 99px; padding: 7px 12px; font-size: .86rem; }
+.selector button.sel { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 14%, transparent); color: var(--acento); font-weight: 700; }
+.plantillas { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.plantillas button { border: 1px solid var(--linea); background: var(--tarjeta); border-radius: 16px; padding: 12px 8px; text-align: center; box-shadow: var(--sombra); }
+.plantillas button b { display: block; font-size: .86rem; margin-top: 4px; }
+.plantillas button small { display: block; color: var(--suave); font-size: .72rem; }
+.plantillas button span { font-size: 1.8rem; }
+.codigo { font: 12px/1.4 ui-monospace, Menlo, monospace; word-break: break-all; background: var(--fondo); border-radius: 10px; padding: 10px; max-height: 120px; overflow: auto; }
+.qr-caja { display: grid; place-items: center; padding: 10px; background: #fff; border-radius: 16px; margin: 10px auto; width: min(260px, 100%); }
+.qr-caja svg { width: 100%; height: auto; }
+.tg { background: linear-gradient(135deg, #229ed9, #2aabee); color: #fff; }
 </style>
 </head>
 <body>
@@ -269,7 +283,7 @@ input[type=range] { width: 100%; accent-color: var(--acento); }
 
       <div class="card">
         <h3>🔌 Conexión con tu IA</h3>
-        <p class="ayuda">En el ordenador, doble clic en <b>iniciar_puente.bat</b> y escanea aquí el código QR.</p>
+        <p class="ayuda">En el ordenador, doble clic en <b>iniciar_puente.sh</b> y escanea aquí el código QR.</p>
         <button class="btn" id="btnQR" style="width:100%">📷 Escanear el QR del ordenador</button>
         <label class="et" for="puente">Dirección del puente</label>
         <input class="campo" id="puente" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://…trycloudflare.com">
@@ -284,6 +298,17 @@ input[type=range] { width: 100%; accent-color: var(--acento); }
         <label class="et" for="modelo">Modelo</label>
         <select class="campo" id="modelo"><option value="">— Pulsa «Conectar» —</option></select>
         <div class="res" id="res"></div>
+      </div>
+
+      <div class="card">
+        <h3>💬 Tu asistente en Telegram</h3>
+        <p class="ayuda">Tu ordenador pondrá tu asistente en un <b>bot de Telegram</b>. 1) Crea tu bot con <b>@BotFather</b> y pega aquí su clave. 2) Elige el asistente y pulsa <b>Enviar</b>. 3) En el ordenador, doble clic en <b>iniciar_bot.sh</b>.</p>
+        <label class="et" for="tgToken">Clave de tu bot (te la da @BotFather)</label>
+        <input class="campo" id="tgToken" type="password" autocomplete="off" spellcheck="false" placeholder="123456789:AA…">
+        <label class="et" for="tgAsis">Asistente que estará en Telegram</label>
+        <select class="campo" id="tgAsis"></select>
+        <div class="fila"><button class="btn tg" id="btnTelegram">📲 Enviar mi asistente al ordenador</button></div>
+        <div class="res" id="tgRes"></div>
       </div>
 
       <div class="card">
@@ -321,7 +346,7 @@ input[type=range] { width: 100%; accent-color: var(--acento); }
 
       <div class="card">
         <h3>ℹ️ Acerca de</h3>
-        <p class="ayuda" style="margin:0"><b>Mi Asistente IA 2.0</b> · Creada en el curso IFCD107 «Especialista en Inteligencia Artificial».<br>Lector de QR: jsQR (Apache 2.0). Los datasets pertenecen a sus autores: mira la licencia de cada uno en <b>📚 Datos</b>.</p>
+        <p class="ayuda" style="margin:0"><b>Mi Asistente IA 3.0</b> · Creada en el curso IFCD107 «Especialista en Inteligencia Artificial».<br>Lector de QR: jsQR (Apache 2.0). Los datasets pertenecen a sus autores: mira la licencia de cada uno en <b>📚 Datos</b>.</p>
         <div class="fila"><button class="btn sec" id="verBienv">👋 Ver la bienvenida</button></div>
       </div>
     </section>
@@ -362,6 +387,7 @@ input[type=range] { width: 100%; accent-color: var(--acento); }
 <canvas id="confeti"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" defer></script>
 <script>
 'use strict';
 /* =====================================================================
@@ -383,6 +409,9 @@ const CATALOGO = [
   { id: 'alpaca', nombre: 'Preguntas y respuestas (Alpaca)', emoji: '💡', repo: 'bertin-project/alpaca-spanish', archivo: 'alpaca_data_cleaned_spanish.json', tam: '27 MB', filas: '51.942 preguntas', licencia: 'CC BY 4.0',
     desc: 'Preguntas e instrucciones de cultura general y tareas variadas, con su respuesta, traducidas al español.',
     esquema: { titulo: 'instruction', campos: ['input', 'output'], buscar: { instruction: 3, input: 1, output: 1 }, meta: [], facetas: [] } },
+  { id: 'sqac', nombre: 'Wikipedia en preguntas (SQAC)', emoji: '📖', repo: 'PlanTL-GOB-ES/SQAC', archivo: 'train.json', tam: '11 MB', filas: '15.036 preguntas', licencia: 'CC BY-SA 4.0',
+    desc: 'Párrafos de 3.064 artículos de la Wikipedia en español con preguntas y respuestas: historia, ciencia, geografía, cultura…',
+    esquema: { titulo: 'titulo', campos: ['contexto', 'pregunta', 'respuesta'], buscar: { titulo: 3, pregunta: 2, contexto: 1 }, meta: [], facetas: [] } },
   { id: 'ciudadania', nombre: 'Examen de ciudadanía de EE. UU.', emoji: '🗽', repo: 'todopueblos/preguntas-ciudadania-eeuu-espanol', archivo: 'civics_questions_es.csv', tam: '114 KB', filas: '228 preguntas', licencia: 'CC BY 4.0',
     desc: 'Preguntas oficiales de historia y gobierno de EE. UU., en español. Pequeño: ideal para probar.',
     esquema: { titulo: 'question_es', campos: ['answers_es', 'section_es', 'topic_es'], buscar: { question_es: 3, answers_es: 1.5, topic_es: 1 }, meta: ['topic_es'], facetas: ['section_es', 'topic_es'] } }
@@ -390,6 +419,32 @@ const CATALOGO = [
 const BANDERAS = { ESP: '🇪🇸 España', MEX: '🇲🇽 México', PER: '🇵🇪 Perú', ARG: '🇦🇷 Argentina', CHL: '🇨🇱 Chile', COL: '🇨🇴 Colombia', VEN: '🇻🇪 Venezuela', ECU: '🇪🇨 Ecuador', URY: '🇺🇾 Uruguay', BOL: '🇧🇴 Bolivia', CRI: '🇨🇷 Costa Rica', CUB: '🇨🇺 Cuba', DOM: '🇩🇴 Rep. Dominicana', GTM: '🇬🇹 Guatemala', HND: '🇭🇳 Honduras', NIC: '🇳🇮 Nicaragua', PAN: '🇵🇦 Panamá', PRY: '🇵🇾 Paraguay', PRI: '🇵🇷 Puerto Rico', SLV: '🇸🇻 El Salvador', USA: '🇺🇸 EE. UU.', ITA: '🇮🇹 Italia', FRA: '🇫🇷 Francia' };
 
 /* ---------- Asistentes de ejemplo ---------- */
+const FICHA = { tono: 'cercano', nivel: 'sencillo', longitud: 'media', emojis: true, idioma: 'español', saludo: '', reglas: '', apuntes: '', wikipedia: true, usarApuntes: true, modelo: '', voz: '', velVoz: 0 };
+const PLANTILLAS = [
+  { emoji: '👵', nombre: 'Chef de la abuela', color: '#ea580c', dataset: 'recetas', wikipedia: true, instrucciones: 'Eres un chef cercano y alegre. Ayudas a cocinar con recetas reales: nombre, ingredientes y pasos numerados.', sugerencias: ['¿Cómo se hace el cocido madrileño?', '¿Qué ceno hoy con pollo y patatas?', 'Un postre fácil para 6 personas'], d: 'Cocina con 20.236 recetas' },
+  { emoji: '🇬🇧', nombre: 'Profe de inglés', color: '#0284c7', idioma: 'bilingüe', instrucciones: 'Eres un profesor de inglés paciente. Explicas en español con ejemplos en inglés y corriges con cariño los errores.', sugerencias: ['¿Cómo se dice «buenos días»?', 'Corrige: I has a dog', 'Dame 5 palabras de cocina en inglés'], d: 'Aprende inglés' },
+  { emoji: '🧑‍💼', nombre: 'Entrevistador de trabajo', color: '#475569', tono: 'formal', instrucciones: 'Eres un entrevistador de recursos humanos. Haces una entrevista de trabajo realista, una pregunta cada vez, y al final das una nota del 1 al 10 y consejos para mejorar.', sugerencias: ['Entrevístame para dependiente', 'Entrevístame para administrativo', '¿Qué pregunta más difícil me pueden hacer?'], d: 'Practica entrevistas' },
+  { emoji: '🧭', nombre: 'Coach de empleo', color: '#16a34a', instrucciones: 'Eres un orientador laboral optimista. Ayudas a buscar empleo: currículum, carta de presentación, dónde buscar y cómo prepararse.', sugerencias: ['Ayúdame con mi currículum', '¿Dónde busco trabajo de IA?', 'Escribe una carta de presentación'], d: 'Busca trabajo' },
+  { emoji: '✉️', nombre: 'Redactor de correos', color: '#7c3aed', longitud: 'media', emojis: false, instrucciones: 'Eres un redactor profesional. Escribes correos, mensajes y textos claros y correctos a partir de lo que te cuentan.', sugerencias: ['Correo para pedir un día libre', 'Mensaje para reclamar un pedido', 'Mejora este texto: …'], d: 'Escribe por ti' },
+  { emoji: '🐍', nombre: 'Profe de IA y Python', color: '#d97706', nivel: 'sencillo', instrucciones: 'Eres un profesor de Inteligencia Artificial y Python para principiantes. Explicas con analogías de la vida diaria y ejemplos de código cortos.', sugerencias: ['¿Qué es un vector?', '¿Para qué sirve pandas?', 'Explícame un bucle for'], d: 'Repasa el curso' },
+  { emoji: '🌍', nombre: 'Guía de viajes', color: '#0d9488', wikipedia: true, instrucciones: 'Eres un guía de viajes entusiasta. Cuentas curiosidades, qué ver y qué comer en cada lugar, con datos de la Wikipedia.', sugerencias: ['¿Qué ver en Toledo?', 'Curiosidades de Japón', '¿Qué se come en Perú?'], d: 'Viaja con Wikipedia' },
+  { emoji: '🤖', nombre: 'Asistente libre', color: '#4f46e5', instrucciones: 'Eres un asistente amable y útil.', sugerencias: ['¿Qué es la inteligencia artificial?', 'Dame 3 ideas para el fin de semana'], d: 'Empieza de cero' }
+];
+function completar(a) { // da a cada asistente todos los campos de la ficha (también a los de versiones anteriores)
+  Object.keys(FICHA).forEach(k => { if (a[k] === undefined) a[k] = FICHA[k]; });
+  if (a.k === undefined) a.k = 3; if (a.temperatura === undefined) a.temperatura = 0.5; if (!a.sugerencias) a.sugerencias = [];
+  return a;
+}
+function construirInstrucciones(a) { // de la ficha del asistente a las instrucciones para la IA
+  const p = [a.instrucciones || 'Eres un asistente amable y útil.', 'Te llamas «' + a.nombre + '».',
+    { cercano: 'Tu tono es cercano y amable; tuteas.', formal: 'Tu tono es formal y educado; tratas de usted.', divertido: 'Tu tono es divertido y con humor, sin perder la utilidad.' }[a.tono] || '',
+    { sencillo: 'Explica todo de forma muy sencilla, como a alguien que empieza, con ejemplos de la vida diaria.', normal: 'Explica con claridad.', experto: 'Puedes usar términos técnicos: hablas con alguien que sabe del tema.' }[a.nivel] || '',
+    { corta: 'Responde muy breve: 2 o 3 frases.', media: 'Responde con una extensión media: un párrafo o una lista corta.', larga: 'Puedes responder con detalle.' }[a.longitud] || '',
+    a.emojis ? 'Usa algunos emojis.' : 'No uses emojis.',
+    { 'español': 'Responde siempre en español.', 'inglés': 'Answer always in English.', 'bilingüe': 'Responde en español y añade la traducción al inglés de las frases importantes.' }[a.idioma] || 'Responde en español.'];
+  if (a.reglas) p.push('Reglas que debes cumplir siempre: ' + a.reglas);
+  return p.filter(Boolean).join('\n');
+}
 const ASISTENTES_INICIO = [
   { id: 'chef', nombre: 'Chef de la abuela', emoji: '👵', color: '#ea580c', dataset: 'recetas', k: 3, temperatura: 0.4,
     instrucciones: 'Eres un chef cercano y alegre. Respondes siempre en español. Cuando recibas recetas del dataset, úsalas: di el nombre de la receta, los ingredientes principales en una lista y los pasos resumidos en una lista numerada. Si hay varias, propón la que mejor encaje y nombra las otras. Sé breve: unas 120 palabras. No inventes recetas si tienes datos.',
@@ -402,7 +457,7 @@ const ASISTENTES_INICIO = [
 /* ---------- Ajustes (se guardan en el móvil) ---------- */
 let cfg = { puente: '', pin: '', ia: 'ollama', modelo: '', asistente: 'chef', asistentes: ASISTENTES_INICIO, maxTokens: 512, efecto: true, verApi: false,
   leerVoz: false, voz: '', velVoz: 1, tema: 'auto', letra: 16, bienvenida: false, conectadaAlgunaVez: false };
-function leerCfg() { try { const g = JSON.parse(localStorage.getItem(CLAVE) || '{}'); cfg = Object.assign(cfg, g); } catch (e) {} }
+function leerCfg() { try { const g = JSON.parse(localStorage.getItem(CLAVE) || '{}'); cfg = Object.assign(cfg, g); } catch (e) {} cfg.asistentes.forEach(completar); cfg.telegram = cfg.telegram || { token: '' }; }
 function guardarCfg() { try { localStorage.setItem(CLAVE, JSON.stringify(cfg)); } catch (e) {} }
 const asis = () => cfg.asistentes.find(a => a.id === cfg.asistente) || cfg.asistentes[0];
 
@@ -688,7 +743,7 @@ function bienvenida() {
   const listo = cfg.puente && cfg.modelo;
   d.innerHTML = '<div class="grande"></div><h2></h2><p></p><div class="etis" style="justify-content:center"></div><div class="chips"></div>';
   d.querySelector('.grande').textContent = a.emoji; d.querySelector('h2').textContent = 'Hola, soy ' + a.nombre;
-  d.querySelector('p').textContent = listo ? 'Pregúntame lo que quieras. Respondo con la IA de tu ordenador.' : 'Todavía no estoy conectada a ninguna IA. Ve a ⚙️ Ajustes para conectarme.';
+  d.querySelector('p').textContent = listo ? (a.saludo || 'Pregúntame lo que quieras. Respondo con la IA de tu ordenador.') : 'Todavía no estoy conectada a ninguna IA. Ve a ⚙️ Ajustes para conectarme.';
   if (a.dataset) { const c = CATALOGO.find(x => x.id === a.dataset); const e = document.createElement('span'); e.className = 'etiqueta-ds'; e.textContent = '📚 ' + (c ? c.nombre : 'Dataset propio'); d.querySelector('.etis').appendChild(e); }
   const chips = d.querySelector('.chips');
   if (listo) (a.sugerencias || []).forEach(q => { const c = document.createElement('button'); c.className = 'chip'; c.textContent = q; c.onclick = () => { $('entrada').value = q; enviar(); }; chips.appendChild(c); });
@@ -717,9 +772,9 @@ function burbujaIA(m, i, animar) {
       if (ac === 'voz') hablar(m.content); if (ac === 'copiar') copiar(m.content); if (ac === 'compartir') compartir(m.content); if (ac === 'otra') otraRespuesta(); if (ac === 'seguir') { b.remove(); enviar('Continúa exactamente donde lo dejaste, sin repetir.'); } };
     bur.appendChild(meta);
     if (m.fuentes && m.fuentes.length) {
-      const t = document.createElement('div'); t.className = 'fuentes-tit'; t.textContent = '📚 Fuentes del dataset (' + m.fuentes.length + ')'; bur.appendChild(t);
+      const t = document.createElement('div'); t.className = 'fuentes-tit'; t.textContent = '📚 Fuentes (' + m.fuentes.length + ')'; bur.appendChild(t);
       const fu = document.createElement('div'); fu.className = 'fuentes';
-      m.fuentes.forEach(x => { const b = document.createElement('button'); b.className = 'fuente'; b.innerHTML = '<b></b><small></small>'; b.querySelector('b').textContent = x.titulo; b.querySelector('small').textContent = x.meta || ('fila ' + (x.i + 1)); b.onclick = () => verFila(m.ds, x.i); fu.appendChild(b); });
+      m.fuentes.forEach(x => { const b = document.createElement('button'); b.className = 'fuente'; b.innerHTML = '<b></b><small></small>'; b.querySelector('b').textContent = x.titulo; b.querySelector('small').textContent = x.meta || ('fila ' + (x.i + 1)); b.onclick = () => x.enlace ? window.open(x.enlace, '_blank', 'noopener') : x.apunte ? abrirHoja('<div class="hoja-cab"><h2>📝 Mis apuntes</h2><button class="ico" onclick="cerrarHoja()">✕</button></div><div class="card" style="white-space:pre-wrap">' + esc(x.apunte) + '</div>') : verFila(m.ds, x.i); fu.appendChild(b); });
       bur.appendChild(fu);
     }
     if (m.api && cfg.verApi) {
@@ -743,6 +798,28 @@ function pensando() {
   const f = document.createElement('div'); f.className = 'msg ia'; f.id = 'pensando';
   f.innerHTML = '<div class="mini"></div><div class="burbuja"><div class="pensando"><div class="orbe"></div><span id="pensTxt">Pensando…</span></div></div>';
   f.querySelector('.mini').textContent = asis().emoji; return f;
+}
+
+const VACIAS_Q = new Set('el la los las un una unos unas de del al a en y o u que se su sus por para con sin es son fue ser como cual cuales quien quienes cuando donde cuanto cuantos mas muy ya lo le les me mi mis te tu tus nos este esta esto hay tiene puede quiero dame algo hacer dime explica explicame sabes sobre hola favor'.split(' '));
+const sinTilde = t => String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const clavesQ = t => sinTilde(t).split(/[^a-z0-9ñ]+/).filter(p => p.length > 2 && !VACIAS_Q.has(p));
+async function wikiApp(pregunta) {
+  const qq = clavesQ(pregunta); if (!qq.length) return [];
+  try {
+    const r = await fetch('https://es.wikipedia.org/w/api.php?' + new URLSearchParams({ action: 'query', list: 'search', srsearch: qq.join(' '), srlimit: 2, format: 'json', origin: '*' })).then(x => x.json());
+    const out = [];
+    for (const x of (r.query?.search || [])) {
+      const d = await fetch('https://es.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(x.title.replace(/ /g, '_'))).then(y => y.json());
+      const comunes = qq.filter(p => sinTilde((d.title || '') + ' ' + (d.extract || '')).includes(p.slice(0, Math.max(4, p.length - 2))));
+      if (d.extract && comunes.length / qq.length >= 0.5) out.push({ titulo: d.title, texto: d.extract.slice(0, 1200), enlace: d.content_urls?.desktop?.page || '' });
+    }
+    return out;
+  } catch (e) { return []; }
+}
+function buscarApuntes(apuntes, pregunta) {
+  const qq = clavesQ(pregunta); if (!qq.length) return [];
+  return apuntes.split(/\n\s*\n/).map(t => t.trim()).filter(Boolean).map(t => { const tt = sinTilde(t); return [qq.filter(p => tt.includes(p.slice(0, Math.max(4, p.length - 2)))).length / qq.length, t]; })
+    .filter(x => x[0] >= 0.5).sort((x, y) => y[0] - x[0]).slice(0, 2).map(x => x[1]);
 }
 
 async function llamarAPI(ruta, opciones = {}) {
@@ -785,7 +862,7 @@ async function enviar(textoForzado) {
   vibrar(15);
   const pens = pensando(); $('vChat').appendChild(pens); $('vChat').scrollTop = $('vChat').scrollHeight;
   ponerOcupado(true);
-  // RAG: buscamos en el dataset las filas más parecidas a la pregunta
+  // RAG: buscamos en el dataset, en tus apuntes y en la Wikipedia lo que más se parece a la pregunta
   let filas = [], fuentes = [];
   if (a.dataset) {
     try { $('pensTxt').textContent = 'Buscando en el dataset…'; const ds = await abrirDataset(a.dataset); const esq = ds.meta.esquema;
@@ -793,12 +870,20 @@ async function enviar(textoForzado) {
       filas = r.items.map(x => textoParaIA(x.fila, esq)); fuentes = r.items.map(x => ({ i: x.i, titulo: tituloFila(x.fila, esq), meta: metaFila(x.fila, esq) }));
     } catch (e) { /* el dataset aún no está descargado: responde sin él */ }
   }
+  if (a.usarApuntes && a.apuntes) {
+    buscarApuntes(a.apuntes, texto).forEach(t => { filas.unshift('Mis apuntes: ' + t); fuentes.unshift({ titulo: '📝 ' + t.split('\n')[0].slice(0, 60), meta: 'Mis apuntes', apunte: t }); });
+  }
+  if (a.wikipedia && filas.length === 0) {
+    if ($('pensTxt')) $('pensTxt').textContent = 'Buscando en la Wikipedia…';
+    (await wikiApp(texto)).forEach(w => { filas.push('Wikipedia «' + w.titulo + '»: ' + w.texto); fuentes.push({ titulo: '🌍 ' + w.titulo, meta: 'Wikipedia', enlace: w.enlace }); });
+  }
   if ($('pensTxt')) $('pensTxt').textContent = filas.length ? 'Pensando con ' + filas.length + ' fuentes…' : 'Pensando…';
-  let instrucciones = a.instrucciones;
-  if (filas.length) instrucciones += '\n\nDatos de consulta del dataset. Si la pregunta trata de esto, responde con estos datos y no con lo que tú creas:\n\n' + filas.map((f, k) => '### Dato ' + (k + 1) + '\n' + f).join('\n\n');
+  let instrucciones = construirInstrucciones(a);
+  if (filas.length) instrucciones += '\n\nInformación de consulta. Responde usando SOLO esta información cuando trate de la pregunta. Si no contiene la respuesta, dilo con sinceridad en lugar de inventar nombres, fechas o cifras:\n\n' + filas.map((f, k) => '### Dato ' + (k + 1) + '\n' + f).join('\n\n');
   const historial = chat.mensajes.filter(m => !m.error).slice(-9).map(m => ({ role: m.role, content: m.content }));
-  const ia = cfg.ia, modelo = cfg.modelo; // los guardamos por si se cambian mientras responde
-  const peticion = { model: modelo, messages: [{ role: 'system', content: instrucciones }].concat(historial), temperature: a.temperatura ?? 0.5, max_tokens: cfg.maxTokens, stream: false };
+  const ia = cfg.ia, modelo = a.modelo || cfg.modelo; // los guardamos por si se cambian mientras responde
+  const maximo = { corta: 220, media: 450, larga: Math.max(900, cfg.maxTokens) }[a.longitud] || cfg.maxTokens;
+  const peticion = { model: modelo, messages: [{ role: 'system', content: instrucciones }].concat(historial), temperature: a.temperatura ?? 0.5, max_tokens: maximo, stream: false };
   const t0 = performance.now(); control = new AbortController();
   try {
     const datos = await llamarAPI('/v1/chat/completions', { body: peticion, control, ia });
@@ -844,33 +929,104 @@ $('btnAsis').onclick = () => {
     h.querySelector('#nuevoAsis').onclick = () => editarAsistente(null);
   });
 };
-function editarAsistente(id) {
-  const nuevo = !id, a = nuevo ? { id: 'a' + Date.now(), nombre: '', emoji: '✨', color: PALETA[Math.floor(Math.random() * PALETA.length)], dataset: '', k: 3, temperatura: 0.5, instrucciones: ASISTENTES_INICIO[1].instrucciones, sugerencias: [] } : JSON.parse(JSON.stringify(cfg.asistentes.find(x => x.id === id)));
+function selector(id, valores, actual) {
+  return '<div class="selector" id="' + id + '">' + valores.map(([v, t]) => '<button type="button" data-v="' + v + '" class="' + (String(v) === String(actual) ? 'sel' : '') + '">' + t + '</button>').join('') + '</div>';
+}
+function leerSelector(h, id) { const b = h.querySelector('#' + id + ' .sel'); return b ? b.dataset.v : ''; }
+function editarAsistente(id, base) {
+  const nuevo = !id;
+  if (nuevo && !base) { elegirPlantilla(); return; }
+  const a = completar(nuevo ? Object.assign({ id: 'a' + Date.now(), k: 3, temperatura: 0.5, dataset: '' }, JSON.parse(JSON.stringify(base))) : JSON.parse(JSON.stringify(cfg.asistentes.find(x => x.id === id))));
+  delete a.d;
   bdTodos('ds').catch(() => []).then(dss => {
     const ops = '<option value="">Sin dataset</option>' + dss.map(d => '<option value="' + d.id + '"' + (d.id === a.dataset ? ' selected' : '') + '>' + esc(d.emoji + ' ' + d.nombre) + '</option>').join('') + (a.dataset && !dss.some(d => d.id === a.dataset) ? '<option value="' + a.dataset + '" selected>📚 ' + esc((CATALOGO.find(c => c.id === a.dataset) || { nombre: a.dataset }).nombre) + ' (sin descargar)</option>' : '');
-    abrirHoja('<div class="hoja-cab"><h2>' + (nuevo ? '➕ Nuevo asistente' : '✏️ Editar asistente') + '</h2><button class="ico" data-cerrar>✕</button></div>' +
-      '<div class="card"><label class="et">Nombre</label><input class="campo" id="eNombre" maxlength="40" value="' + esc(a.nombre) + '" placeholder="Por ejemplo: Profe de inglés">' +
+    const voces = '<option value="">La de Ajustes</option>' + vocesEs().map(v => '<option value="' + esc(v.name) + '"' + (v.name === a.voz ? ' selected' : '') + '>' + esc(v.name + ' (' + v.lang + ')') + '</option>').join('');
+    const modelos = '<option value="">El de Ajustes (' + esc(cfg.modelo || 'sin elegir') + ')</option>' + [...$('modelo').options].filter(o => o.value).map(o => '<option' + (o.value === a.modelo ? ' selected' : '') + '>' + esc(o.value) + '</option>').join('');
+    abrirHoja('<div class="hoja-cab"><h2>' + (nuevo ? '➕ Nuevo asistente' : '✏️ Tu asistente') + '</h2><button class="ico" data-cerrar>✕</button></div><div class="card">' +
+      '<div class="sec-t">🪪 Identidad</div><label class="et">Nombre</label><input class="campo" id="eNombre" maxlength="40" value="' + esc(a.nombre) + '" placeholder="Por ejemplo: Profe de inglés de Ana">' +
       '<label class="et">Icono (un emoji)</label><input class="campo" id="eEmoji" maxlength="4" value="' + esc(a.emoji) + '">' +
       '<label class="et">Color</label><div class="colores" id="eColores">' + PALETA.map(c => '<button style="background:' + c + '" data-c="' + c + '" class="' + (c === a.color ? 'sel' : '') + '" aria-label="Color ' + c + '"></button>').join('') + '</div>' +
-      '<label class="et">Instrucciones para la IA (system prompt)</label><textarea class="campo" id="eInstr">' + esc(a.instrucciones) + '</textarea>' +
-      '<label class="et">📚 Dataset que consulta</label><select class="campo" id="eDs">' + ops + '</select>' +
-      '<div class="inter"><span>Filas del dataset por respuesta<small id="eKt"></small></span></div><input type="range" id="eK" min="1" max="6" value="' + a.k + '">' +
+      '<label class="et">Saludo (lo primero que dice)</label><input class="campo" id="eSaludo" maxlength="160" value="' + esc(a.saludo) + '" placeholder="¡Hola! Soy tu chef. ¿Qué cocinamos hoy?">' +
+      '<div class="sec-t">🎭 Personalidad</div><label class="et">Quién es y qué hace (instrucciones)</label><textarea class="campo" id="eInstr">' + esc(a.instrucciones) + '</textarea>' +
+      '<label class="et">Tono</label>' + selector('eTono', [['cercano', '😊 Cercano'], ['formal', '🎩 Formal'], ['divertido', '🤪 Divertido']], a.tono) +
+      '<label class="et">Nivel de las explicaciones</label>' + selector('eNivel', [['sencillo', '🌱 Muy sencillo'], ['normal', '📘 Normal'], ['experto', '🎓 Experto']], a.nivel) +
+      '<label class="et">Longitud de las respuestas</label>' + selector('eLong', [['corta', '✂️ Corta'], ['media', '📄 Media'], ['larga', '📚 Larga']], a.longitud) +
+      '<label class="et">Idioma</label>' + selector('eIdioma', [['español', '🇪🇸 Español'], ['inglés', '🇬🇧 Inglés'], ['bilingüe', '🌐 Bilingüe']], a.idioma) +
+      '<div class="inter"><span>Usar emojis</span><input type="checkbox" class="sw" id="eEmojis"' + (a.emojis ? ' checked' : '') + '></div>' +
+      '<label class="et">Reglas que siempre cumple</label><textarea class="campo" id="eReglas" style="min-height:70px" placeholder="Nunca hables de política. Termina siempre con una pregunta.">' + esc(a.reglas) + '</textarea>' +
+      '<div class="sec-t">🧠 Conocimiento</div><label class="et">📚 Dataset que consulta</label><select class="campo" id="eDs">' + ops + '</select>' +
+      '<div class="inter"><span>🌍 Wikipedia en directo<small>Busca en la Wikipedia en español cuando no lo encuentra en su dataset</small></span><input type="checkbox" class="sw" id="eWiki"' + (a.wikipedia ? ' checked' : '') + '></div>' +
+      '<div class="inter"><span>📝 Mis apuntes<small>Lo que escribas aquí, lo sabrá. Separa cada tema con una línea en blanco.</small></span><input type="checkbox" class="sw" id="eUsarAp"' + (a.usarApuntes ? ' checked' : '') + '></div>' +
+      '<textarea class="campo" id="eApuntes" style="min-height:110px" placeholder="Horario del curso\nLas clases son de 15:00 a 20:00, con descanso de 17:30 a 17:50.\n\nMi negocio\n…">' + esc(a.apuntes) + '</textarea>' +
+      '<div class="sec-t">⚙️ Cerebro</div><label class="et">Modelo</label><select class="campo" id="eModelo">' + modelos + '</select>' +
+      '<div class="inter"><span>Fuentes por respuesta<small id="eKt"></small></span></div><input type="range" id="eK" min="1" max="6" value="' + a.k + '">' +
       '<div class="inter"><span>Creatividad (temperatura)<small id="eTt"></small></span></div><input type="range" id="eT" min="0" max="1.2" step="0.1" value="' + a.temperatura + '">' +
-      '<label class="et">Preguntas sugeridas (una por línea)</label><textarea class="campo" id="eSug" style="min-height:80px">' + esc((a.sugerencias || []).join('\n')) + '</textarea></div>' +
-      '<div class="fila"><button class="btn" id="eGuardar">✔ Guardar</button>' + (!nuevo && cfg.asistentes.length > 1 ? '<button class="btn peligro" id="eBorrar">Borrar</button>' : '') + '</div>', h => {
+      '<div class="sec-t">🔊 Voz</div><select class="campo" id="eVoz">' + voces + '</select>' +
+      '<div class="inter"><span>Velocidad<small id="eVt"></small></span></div><input type="range" id="eVel" min="0" max="1.6" step="0.1" value="' + (a.velVoz || 0) + '">' +
+      '<div class="fila"><button class="btn sec" id="eProbarVoz" type="button">▶ Escuchar su voz</button></div>' +
+      '<div class="sec-t">💬 Preguntas sugeridas</div><textarea class="campo" id="eSug" style="min-height:80px" placeholder="Una por línea">' + esc((a.sugerencias || []).join('\n')) + '</textarea></div>' +
+      '<div class="fila"><button class="btn" id="eGuardar">✔ Guardar</button>' + (!nuevo ? '<button class="btn sec" id="eCompartir">🔁 Compartir</button>' : '') + (!nuevo && cfg.asistentes.length > 1 ? '<button class="btn peligro" id="eBorrar">Borrar</button>' : '') + '</div>', h => {
       h.querySelector('[data-cerrar]').onclick = cerrarHoja;
-      const kt = () => { const t = +h.querySelector('#eT').value; h.querySelector('#eKt').textContent = h.querySelector('#eK').value + ' filas'; h.querySelector('#eTt').textContent = t.toFixed(1) + (t < 0.4 ? ' · muy fiel' : t > 0.8 ? ' · muy creativa' : ' · equilibrada'); };
-      h.querySelector('#eK').oninput = kt; h.querySelector('#eT').oninput = kt; kt();
+      h.querySelectorAll('.selector').forEach(g => g.querySelectorAll('button').forEach(b => b.onclick = () => { g.querySelectorAll('button').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); }));
+      const kt = () => { const t = +h.querySelector('#eT').value, v = +h.querySelector('#eVel').value; h.querySelector('#eKt').textContent = h.querySelector('#eK').value + ' fuentes'; h.querySelector('#eTt').textContent = t.toFixed(1) + (t < 0.4 ? ' · muy fiel' : t > 0.8 ? ' · muy creativa' : ' · equilibrada'); h.querySelector('#eVt').textContent = v ? v.toFixed(1) + '×' : 'la de Ajustes'; };
+      ['#eK', '#eT', '#eVel'].forEach(q => h.querySelector(q).oninput = kt); kt();
       h.querySelectorAll('#eColores button').forEach(b => b.onclick = () => { h.querySelectorAll('#eColores button').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); a.color = b.dataset.c; });
-      h.querySelector('#eGuardar').onclick = () => {
-        a.nombre = h.querySelector('#eNombre').value.trim() || 'Mi asistente'; a.emoji = h.querySelector('#eEmoji').value.trim() || '✨';
-        a.instrucciones = h.querySelector('#eInstr').value.trim() || ASISTENTES_INICIO[1].instrucciones; a.dataset = h.querySelector('#eDs').value;
-        a.k = +h.querySelector('#eK').value; a.temperatura = +h.querySelector('#eT').value; a.sugerencias = h.querySelector('#eSug').value.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 6);
-        if (nuevo) cfg.asistentes.push(a); else cfg.asistentes = cfg.asistentes.map(x => x.id === a.id ? a : x);
-        cfg.asistente = a.id; guardarCfg(); aplicarAspecto(); cerrarHoja(); nuevaConversacion(); ir('vChat'); aviso('✔ Asistente guardado');
+      const leer = () => {
+        a.nombre = h.querySelector('#eNombre').value.trim() || 'Mi asistente'; a.emoji = h.querySelector('#eEmoji').value.trim() || '✨'; a.saludo = h.querySelector('#eSaludo').value.trim();
+        a.instrucciones = h.querySelector('#eInstr').value.trim() || 'Eres un asistente amable y útil.';
+        a.tono = leerSelector(h, 'eTono') || 'cercano'; a.nivel = leerSelector(h, 'eNivel') || 'sencillo'; a.longitud = leerSelector(h, 'eLong') || 'media'; a.idioma = leerSelector(h, 'eIdioma') || 'español';
+        a.emojis = h.querySelector('#eEmojis').checked; a.reglas = h.querySelector('#eReglas').value.trim();
+        a.dataset = h.querySelector('#eDs').value; a.wikipedia = h.querySelector('#eWiki').checked; a.usarApuntes = h.querySelector('#eUsarAp').checked; a.apuntes = h.querySelector('#eApuntes').value.trim();
+        a.modelo = h.querySelector('#eModelo').value; a.k = +h.querySelector('#eK').value; a.temperatura = +h.querySelector('#eT').value;
+        a.voz = h.querySelector('#eVoz').value; a.velVoz = +h.querySelector('#eVel').value;
+        a.sugerencias = h.querySelector('#eSug').value.split('\n').map(x => x.trim()).filter(Boolean).slice(0, 6);
       };
+      h.querySelector('#eProbarVoz').onclick = () => { leer(); hablar(a.saludo || ('Hola, soy ' + a.nombre + '.'), null, a); };
+      h.querySelector('#eGuardar').onclick = () => {
+        leer();
+        if (nuevo) cfg.asistentes.push(a); else cfg.asistentes = cfg.asistentes.map(x => x.id === a.id ? a : x);
+        cfg.asistente = a.id; guardarCfg(); aplicarAspecto(); cerrarHoja(); nuevaConversacion(); ir('vChat'); aviso('✔ Asistente guardado'); confeti();
+      };
+      const co = h.querySelector('#eCompartir'); if (co) co.onclick = () => { leer(); compartirAsistente(a); };
       const bo = h.querySelector('#eBorrar'); if (bo) bo.onclick = () => { if (!confirm('¿Borrar este asistente?')) return; cfg.asistentes = cfg.asistentes.filter(x => x.id !== a.id); cfg.asistente = cfg.asistentes[0].id; guardarCfg(); aplicarAspecto(); cerrarHoja(); nuevaConversacion(); };
     });
+  });
+}
+function elegirPlantilla() {
+  abrirHoja('<div class="hoja-cab"><h2>✨ Elige un punto de partida</h2><button class="ico" data-cerrar>✕</button></div><p class="ayuda" style="color:var(--suave)">Después podrás cambiarlo todo a tu gusto.</p><div class="plantillas">' +
+    PLANTILLAS.map((p, i) => '<button data-p="' + i + '"><span>' + p.emoji + '</span><b>' + esc(p.nombre) + '</b><small>' + esc(p.d) + '</small></button>').join('') + '</div>' +
+    '<div class="fila"><button class="btn sec" id="importarAsis">📥 Importar el asistente de un compañero</button></div>', h => {
+    h.querySelector('[data-cerrar]').onclick = cerrarHoja;
+    h.querySelectorAll('[data-p]').forEach(b => b.onclick = () => editarAsistente(null, PLANTILLAS[+b.dataset.p]));
+    h.querySelector('#importarAsis').onclick = importarAsistente;
+  });
+}
+/* ---------- Compartir asistentes con un QR o un código ---------- */
+function codigoAsistente(a, conApuntes) {
+  const c = {}; ['nombre', 'emoji', 'color', 'instrucciones', 'tono', 'nivel', 'longitud', 'emojis', 'idioma', 'saludo', 'reglas', 'wikipedia', 'usarApuntes', 'k', 'temperatura', 'sugerencias'].forEach(k => c[k] = a[k]);
+  if (conApuntes) c.apuntes = a.apuntes;
+  if (CATALOGO.some(x => x.id === a.dataset)) c.dataset = a.dataset;
+  return 'MIA3:' + btoa(unescape(encodeURIComponent(JSON.stringify(c))));
+}
+function compartirAsistente(a) {
+  let cod = codigoAsistente(a, true); if (cod.length > 2300) cod = codigoAsistente(a, false);
+  let qr = '';
+  if (window.qrcode && cod.length <= 2300) { const q = qrcode(0, 'L'); q.addData(cod); q.make(); qr = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
+  abrirHoja('<div class="hoja-cab"><h2>🔁 Compartir «' + esc(a.nombre) + '»</h2><button class="ico" data-cerrar>✕</button></div>' +
+    '<p class="ayuda" style="color:var(--suave)">Tu compañero abre su app → toca el nombre del asistente → ➕ Crear asistente → <b>📥 Importar</b> y escanea este QR (o pega el código).</p>' +
+    (qr ? '<div class="qr-caja">' + qr + '</div>' : '') + '<div class="codigo">' + esc(cod) + '</div><div class="fila"><button class="btn" id="copiarCod">📋 Copiar el código</button></div>', h => {
+    h.querySelector('[data-cerrar]').onclick = cerrarHoja; h.querySelector('#copiarCod').onclick = () => copiar(cod);
+  });
+}
+function usarCodigoAsistente(texto) {
+  const m = String(texto).trim().match(/MIA3:([A-Za-z0-9+/=]+)/); if (!m) return false;
+  try { const base = JSON.parse(decodeURIComponent(escape(atob(m[1])))); vibrar(60); setTimeout(() => editarAsistente(null, base), 300); aviso('📥 Asistente importado: revísalo y pulsa Guardar'); return true; } catch (e) { return false; }
+}
+function importarAsistente() {
+  abrirHoja('<div class="hoja-cab"><h2>📥 Importar un asistente</h2><button class="ico" data-cerrar>✕</button></div><div class="card"><button class="btn" id="impQR" style="width:100%">📷 Escanear su QR</button><label class="et">… o pega su código</label><textarea class="campo" id="impCod" style="min-height:90px" placeholder="MIA3:…"></textarea><div class="fila"><button class="btn sec" id="impOk">📥 Importar</button></div></div>', h => {
+    h.querySelector('[data-cerrar]').onclick = cerrarHoja;
+    h.querySelector('#impQR').onclick = () => { cerrarHoja(); abrirQR(usarCodigoAsistente); };
+    h.querySelector('#impOk').onclick = () => { if (!usarCodigoAsistente(h.querySelector('#impCod').value)) aviso('⚠️ Ese código no es válido'); };
   });
 }
 
@@ -1015,7 +1171,33 @@ function marcarOpciones() {
   document.querySelectorAll('[data-ia]').forEach(o => { o.classList.toggle('sel', o.dataset.ia === cfg.ia); o.setAttribute('aria-checked', o.dataset.ia === cfg.ia); });
   document.querySelectorAll('[data-tema]').forEach(o => o.classList.toggle('sel', o.dataset.tema === cfg.tema));
 }
+function pintarTelegram() {
+  $('tgToken').value = (cfg.telegram && cfg.telegram.token) || '';
+  $('tgAsis').innerHTML = cfg.asistentes.map(a => '<option value="' + a.id + '"' + (a.id === (cfg.telegram.asistente || cfg.asistente) ? ' selected' : '') + '>' + esc(a.emoji + ' ' + a.nombre) + '</option>').join('');
+}
+async function enviarAlOrdenador() {
+  leerAjustes();
+  const token = $('tgToken').value.trim(), a = cfg.asistentes.find(x => x.id === $('tgAsis').value) || asis(), r = $('tgRes');
+  cfg.telegram = { token, asistente: a.id }; guardarCfg();
+  const mal = t => { r.className = 'res mal'; r.textContent = '⚠️ ' + t; };
+  if (!/^\d+:[\w-]{20,}$/.test(token)) return mal('La clave no parece de BotFather. Es así: 123456789:AAH… (números, dos puntos y letras).');
+  if (!cfg.puente) return mal('Primero conecta la app con tu ordenador (escanea el QR del puente, arriba).');
+  if (!(a.modelo || cfg.modelo)) return mal('Primero elige un modelo (pulsa Conectar, arriba).');
+  const ficha = { nombre: a.nombre, emoji: a.emoji, instrucciones: a.instrucciones, tono: a.tono, nivel: a.nivel, longitud: a.longitud, emojis: a.emojis, idioma: a.idioma, saludo: a.saludo, reglas: a.reglas,
+    apuntes: a.usarApuntes ? a.apuntes : '', temperatura: a.temperatura, k: a.k,
+    conocimiento: { wikipedia: !!a.wikipedia, recetas: a.dataset === 'recetas', alpaca: a.dataset === 'alpaca', sqac: a.dataset === 'sqac', apuntes: !!a.usarApuntes } };
+  r.className = 'res info'; r.textContent = '⏳ Enviando a tu ordenador…'; $('btnTelegram').disabled = true;
+  try {
+    const resp = await fetch(cfg.puente + '/config', { method: 'POST', headers: { 'X-PIN': cfg.pin || '', 'Content-Type': 'application/json' }, body: JSON.stringify({ telegram: { token }, ia: cfg.ia, modelo: a.modelo || cfg.modelo, asistente: ficha }) });
+    if (resp.status === 401) mal('El PIN no es correcto. Escanea otra vez el QR del ordenador.');
+    else if (resp.status === 404) mal('Tu puente es de la versión anterior: actualiza el archivo puente.py y vuelve a abrir iniciar_puente.sh.');
+    else if (!resp.ok) mal('El ordenador ha respondido con un error ' + resp.status + '.');
+    else { r.className = 'res ok'; r.textContent = '✅ ¡«' + a.nombre + '» está en tu ordenador! Si el bot no está encendido, haz doble clic en iniciar_bot.sh. Si ya lo está, se actualiza solo.'; confeti(); vibrar([20, 50, 20]); }
+  } catch (e) { mal('No llego al ordenador. ¿Está abierta la ventana del puente? La dirección cambia cada vez: vuelve a escanear el QR.'); }
+  $('btnTelegram').disabled = false;
+}
 function rellenarAjustes() {
+  pintarTelegram();
   $('puente').value = cfg.puente; $('pin').value = cfg.pin; $('maxTokens').value = cfg.maxTokens; $('efecto').checked = cfg.efecto; $('verApi').checked = cfg.verApi;
   $('leerVoz').checked = cfg.leerVoz; $('velVoz').value = cfg.velVoz; $('letra').value = cfg.letra;
   const sel = $('modelo'); if (cfg.modelo && ![...sel.options].some(o => o.value === cfg.modelo)) { sel.innerHTML = ''; sel.add(new Option(cfg.modelo, cfg.modelo)); } sel.value = cfg.modelo;
@@ -1055,36 +1237,40 @@ async function conectar() {
   $('btnConectar').disabled = false;
 }
 $('btnConectar').onclick = conectar;
+$('btnTelegram').onclick = enviarAlOrdenador;
 $('borrarChats').onclick = async () => { if (!confirm('¿Borrar todas las conversaciones?')) return; await bd('chats', 'readwrite', s => s.clear()); nuevaConversacion(); aviso('🗑️ Conversaciones borradas'); };
 $('borrarTodo').onclick = async () => { if (!confirm('¿Borrar TODO: conversaciones, datasets, asistentes y ajustes?')) return; try { localStorage.removeItem(CLAVE); } catch (e) {} if (BD) BD.close(); motor.terminate(); indexedDB.deleteDatabase('mi-ia-bd'); setTimeout(() => location.reload(), 300); };
 $('verBienv').onclick = () => abrirBienvenida();
 
 /* ---------- Lector de QR ---------- */
 let flujo = null, buscando = false;
-async function abrirQR() {
+let qrManejador = null;
+async function abrirQR(manejador) {
+  qrManejador = typeof manejador === 'function' ? manejador : null;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { resultado('mal', 'Este navegador no deja usar la cámara. Escribe la dirección y el PIN a mano.'); return; }
   try { flujo = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }); }
   catch (e) { resultado('mal', 'No tengo permiso para usar la cámara. Actívalo o escribe la dirección y el PIN a mano.'); return; }
   const v = $('video'); v.srcObject = flujo; await v.play().catch(() => {}); $('lector').classList.add('abierto'); buscando = true;
   const lienzo = document.createElement('canvas'), ctx = lienzo.getContext('2d', { willReadFrequently: true });
-  const detector = ('BarcodeDetector' in window) ? new window.BarcodeDetector({ formats: ['qr_code'] }) : null;
+  const detector = null;
   const vuelta = async () => {
     if (!buscando) return;
     if (v.readyState >= 2) { let texto = null;
       try { if (detector) { const r = await detector.detect(v); if (r.length) texto = r[0].rawValue; } else if (window.jsQR) { lienzo.width = v.videoWidth; lienzo.height = v.videoHeight; ctx.drawImage(v, 0, 0); const img = ctx.getImageData(0, 0, lienzo.width, lienzo.height); const r = window.jsQR(img.data, img.width, img.height); if (r) texto = r.data; } } catch (e) {}
-      if (texto && usarQR(texto)) { cerrarQR(); conectar(); return; } }
+      if (texto && (qrManejador ? qrManejador(texto) : usarQR(texto))) { const conPuente = !qrManejador; cerrarQR(); if (conPuente) conectar(); return; } }
     requestAnimationFrame(vuelta);
   };
   requestAnimationFrame(vuelta);
 }
 function cerrarQR() { buscando = false; if (flujo) flujo.getTracks().forEach(t => t.stop()); flujo = null; $('lector').classList.remove('abierto'); }
 function usarQR(texto) {
+  if (/MIA3:/.test(texto)) return usarCodigoAsistente(texto);
   try { const u = new URL(texto), p = u.searchParams; let puente = p.get('puente'); const pin = p.get('pin');
     if (!puente && /trycloudflare\.com$/i.test(u.hostname)) puente = u.origin; if (!puente) return false;
     $('puente').value = limpiarPuente(puente); if (pin) $('pin').value = pin; if (p.get('ia') && PUERTOS[p.get('ia')]) { cfg.ia = p.get('ia'); marcarOpciones(); }
     vibrar(60); return true; } catch (e) { return false; }
 }
-$('btnQR').onclick = abrirQR; $('btnCerrarQR').onclick = cerrarQR;
+$('btnQR').onclick = () => abrirQR(); $('btnCerrarQR').onclick = cerrarQR;
 function leerEnlace() {
   const p = new URLSearchParams(location.search);
   if (!p.get('puente')) return false;
@@ -1097,13 +1283,14 @@ function leerEnlace() {
    ===================================================================== */
 const vocesEs = () => ('speechSynthesis' in window) ? speechSynthesis.getVoices().filter(v => /^es/i.test(v.lang)) : [];
 function pintarVoces() { const sel = $('voz'), act = cfg.voz; sel.innerHTML = '<option value="">Automática</option>'; vocesEs().forEach(v => sel.add(new Option(v.name + ' (' + v.lang + ')', v.name))); sel.value = act; }
-function hablar(texto, alAcabar) {
+function hablar(texto, alAcabar, quien) {
+  const yo = quien || asis();
   if (!('speechSynthesis' in window)) { alAcabar && alAcabar(); return; }
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(String(texto).replace(/[*#_`>]/g, '').replace(/\n+/g, '. '));
-  const v = vocesEs().find(x => x.name === cfg.voz) || vocesEs().find(x => /es-ES/i.test(x.lang)) || vocesEs()[0];
+  const v = vocesEs().find(x => x.name === (yo.voz || cfg.voz)) || vocesEs().find(x => /es-ES/i.test(x.lang)) || vocesEs()[0];
   if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'es-ES';
-  u.rate = cfg.velVoz || 1; u.onend = () => alAcabar && alAcabar(); u.onerror = () => alAcabar && alAcabar();
+  u.rate = yo.velVoz || cfg.velVoz || 1; u.onend = () => alAcabar && alAcabar(); u.onerror = () => alAcabar && alAcabar();
   speechSynthesis.speak(u);
 }
 $('btnProbarVoz').onclick = () => { leerAjustes(); hablar('Hola, soy ' + asis().nombre + '. Así sueno.'); };
