@@ -1283,11 +1283,21 @@ function leerEnlace() {
    ===================================================================== */
 const vocesEs = () => ('speechSynthesis' in window) ? speechSynthesis.getVoices().filter(v => /^es/i.test(v.lang)) : [];
 function pintarVoces() { const sel = $('voz'), act = cfg.voz; sel.innerHTML = '<option value="">Automática</option>'; vocesEs().forEach(v => sel.add(new Option(v.name + ' (' + v.lang + ')', v.name))); sel.value = act; }
+let reEmoji;
+try { reEmoji = new RegExp('[\\p{Extended_Pictographic}\\u{1F1E6}-\\u{1F1FF}\\u{1F3FB}-\\u{1F3FF}\\uFE0F\\u200D\\u20E3]', 'gu'); }
+catch (e) { reEmoji = /[←-⯿️‍⃣]|[\uD83C-\uD83E][\uDC00-\uDFFF]/g; }
+let vozDesbloqueada = false;
+function desbloquearVoz() {
+  if (vozDesbloqueada || !('speechSynthesis' in window)) return;
+  vozDesbloqueada = true;
+  try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch (e) {}
+}
+['pointerdown', 'touchend', 'click'].forEach(ev => document.addEventListener(ev, desbloquearVoz, { once: true, passive: true }));
 function hablar(texto, alAcabar, quien) {
   const yo = quien || asis();
   if (!('speechSynthesis' in window)) { alAcabar && alAcabar(); return; }
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(String(texto).replace(/[*#_`>]/g, '').replace(/\n+/g, '. '));
+  const u = new SpeechSynthesisUtterance(String(texto).replace(reEmoji, '').replace(/[*#_`>]/g, '').replace(/\n+/g, '. ').replace(/[ \t]{2,}/g, ' ').trim());
   const v = vocesEs().find(x => x.name === (yo.voz || cfg.voz)) || vocesEs().find(x => /es-ES/i.test(x.lang)) || vocesEs()[0];
   if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'es-ES';
   u.rate = yo.velVoz || cfg.velVoz || 1; u.onend = () => alAcabar && alAcabar(); u.onerror = () => alAcabar && alAcabar();
