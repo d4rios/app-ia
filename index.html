@@ -1297,12 +1297,19 @@ $('btnProbarVoz').onclick = () => { leerAjustes(); hablar('Hola, soy ' + asis().
 if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = pintarVoces;
 const Reconocer = window.SpeechRecognition || window.webkitSpeechRecognition;
 let oyendo = null, manosLibres = false;
+function conInterrogacion(t) {
+  const s = t.trim();
+  if (!s || /[?¿]/.test(s)) return t;
+  const n = s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  if (/^(que|como|cuando|cuanto|cuanta|cuantos|cuantas|donde|adonde|quien|quienes|cual|cuales|por que|para que|(?:en|de|a|con|desde|hasta|por|para) (?:que|donde|cuando|quien|cual|cuanto)|puedes|podrias|sabes|sabrias|conoces)\b/.test(n)) return '¿' + s.replace(/[.,;:]+$/, '') + '?';
+  return t;
+}
 function escuchar() {
   if (!Reconocer || ocupado) return;
   if (oyendo) { oyendo.stop(); return; }
   const rec = new Reconocer(); rec.lang = 'es-ES'; rec.interimResults = true;
   let final = '';
-  rec.onresult = e => { let t = ''; for (let i = 0; i < e.results.length; i++) { t += e.results[i][0].transcript; if (e.results[i].isFinal) final = t; } $('entrada').value = t; ajustarAlto(); };
+  rec.onresult = e => { let t = ''; for (let i = 0; i < e.results.length; i++) { t += e.results[i][0].transcript; if (e.results[i].isFinal) final = t; } $('entrada').value = conInterrogacion(t); ajustarAlto(); };
   rec.onend = () => { oyendo = null; $('mic').classList.remove('oyendo'); if (final.trim()) enviar(); else if (manosLibres) setTimeout(escuchar, 600); };
   rec.onerror = () => { oyendo = null; $('mic').classList.remove('oyendo'); };
   oyendo = rec; $('mic').classList.add('oyendo'); if ('speechSynthesis' in window) speechSynthesis.cancel(); vibrar(10);
